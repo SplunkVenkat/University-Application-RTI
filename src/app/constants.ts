@@ -49,8 +49,14 @@ formFields:[
       "label": "Whether the application is related to SVU",
       "value": "yes",
       "options": [
-        "yes",
-        "no"
+        {
+          "id": 1,
+          "value": "Yes"
+        },
+        {
+          "id": 2,
+          "value": "No"
+        }
       ],
       "required": true
     },
@@ -72,7 +78,7 @@ formFields:[
       "type": "dropdown",
       "formControlName": "endorsement",
       "label": "Endorsement given sections",
-      "value": "2",
+      "value": [],
       "options": [
         {
           "id": 1,
@@ -123,17 +129,26 @@ formFields:[
       "type": "radio",
       "formControlName": "appealReason",
       "label": "Reasons for filing first appeal",
-      "value": "Both",
+      "value": "",
       "options": [
-        "Non receipt of the information",
-        "Not satisfied by the information",
-        "Both"
+        {
+          "id": 1,
+          "value": "Non receipt of the information"
+        },
+        {
+          "id": 2,
+          "value": "Not satisfied by the information"
+        },
+        {
+          "id": 3,
+          "value": "Both"
+        }
       ],
       "required": true
     },
     {
       "type": "dropdown",
-      "formControlName": "appealEndrosement",
+      "formControlName": "appealEndorsement",
       "label": "FA Endorsement given sections",
       "value": "1",
       "options": [

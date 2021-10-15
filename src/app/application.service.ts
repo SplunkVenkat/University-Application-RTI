@@ -19,7 +19,7 @@ export class ApplicationService {
 
   public getApplicationDropdown() {
     if (this.applicationDropdown.length === 0) {
-      return this.http.get(this.REST_API_SERVER + 'applicationsdd/').subscribe(res=>{
+      return this.http.get(this.REST_API_SERVER + 'applicationdropdown').subscribe(res=>{
         this.applicationDropdown = res;
       })
     }

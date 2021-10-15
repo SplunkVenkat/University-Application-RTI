@@ -19,6 +19,7 @@ export class CreateApplicationComponent implements OnInit , AfterViewInit {
   formConfig : any = [];
   isLoading : boolean = false;
   data : Array<IForm> = [];
+  dropDownData :any= [];
   mode : string = '';
   applicationId:any;
   dateProcess =  (x: string): string => {
@@ -30,6 +31,7 @@ export class CreateApplicationComponent implements OnInit , AfterViewInit {
   constructor(private applicationService:ApplicationService,public dialog: MatDialog,private router: Router) { }
   
   ngOnInit(): void {
+  this.dropDownData = this.applicationService.applicationDropdown;
   console.log(history.state.data)
   const { mode, id } = history.state.data
   this.mode = mode;
@@ -41,23 +43,37 @@ export class CreateApplicationComponent implements OnInit , AfterViewInit {
   if(mode === 'firstappealapplication'){
     this.data = [BASE_APPLICATION,FA_SECTION];
   }
-  if(mode === 'commissionappealapplication'){
+  if(mode === 'commissionappealapplication' || mode === 'bulkEdit'){
     this.data = [BASE_APPLICATION,FA_SECTION,CA_SECTION];
   }
   
-  // let updateDropdown = this.data.find(d=>d.formControlName==='endorsementSection')
-  // updateDropdown!.options = this.applicationService.applicationDropdown;
+  if(this.data.length == 1){
+    debugger;
+    let updateDropdown = this.data[0].formFields.find((d:any)=>d.formControlName==='endorsement')
+    updateDropdown!.options = this.dropDownData.filter((f:any)=>f.type == 'FE').map((m:any)=>{return {'id':m.id,'value':m.valueData}});
+  }
+  if(this.data.length == 2 || this.data.length == 3){
+    debugger;
+    let updateDropdown1 = this.data[0].formFields.find((d:any)=>d.formControlName==='endorsement')
+    updateDropdown1!.options = this.dropDownData.filter((f:any)=>f.type == 'FE').map((m:any)=>{return {'id':m.id,'value':m.valueData}});
+    let updateDropdown = this.data[1].formFields.find((d:any)=>d.formControlName==='appealEndorsement')
+    updateDropdown!.options = this.dropDownData.filter((f:any)=>f.type == 'FAE').map((m:any)=>{return {'id':m.id,'value':m.valueData}});
+  }
+ 
   
   // let applicationDate = this.data.find(d=>d.formControlName==='endorsementDate')
   // applicationDate!.value = getDate();
   
   this.formConfig =  this.data;
+  debugger;
   }
   formChange(event:any){ 
     if(this.mode === 'freshapplication') {
     let payload = event.value.forms[0];
     let applicationNumber = this.processApplicationNumber(event.value.forms[0].dateCreated)
     payload = {...payload,...{applicationNumber}};
+    debugger;
+    payload.endorsement = payload.endorsement.toString()
     this.applicationService.createFreshApplication(payload).subscribe((res:any)=>{
       console.log(res);
       this.isLoading = false;
@@ -68,9 +84,8 @@ export class CreateApplicationComponent implements OnInit , AfterViewInit {
     if(this.mode === 'firstappealapplication') {
       debugger;
       let payload = event.value.forms[0];
-      payload.appealReason = 0;
-      payload.appealEndrosement = 0;
-      this.applicationService.updateFreshApplication({firstAppeal:payload},10).subscribe((res:any)=>{
+      payload.appealEndorsement = payload.appealEndorsement.toString();
+      this.applicationService.updateFreshApplication({firstAppeal:payload},this.applicationId).subscribe((res:any)=>{
         console.log(res);
         this.isLoading = false;
        // this.openDialog(res)
@@ -80,44 +95,69 @@ export class CreateApplicationComponent implements OnInit , AfterViewInit {
     if(this.mode === 'commissionappealapplication') {
       debugger;
       let payload = event.value.forms[0];
-      this.applicationService.updateFreshApplication({commissionAppeal:payload},10).subscribe((res:any)=>{
+      this.applicationService.updateFreshApplication({commissionAppeal:payload},this.applicationId).subscribe((res:any)=>{
         console.log(res);
         this.isLoading = false;
        // this.openDialog(res)
       
       })
     }
+    if(this.mode == 'bulkEdit'){
+
+    }
   }
   ngAfterViewInit(){
+    debugger;
+ 
     this.applicationService.getApplicationById(this.applicationId).subscribe((res:any)=>{
+      debugger;
+      const {commissionAppeal , firstAppeal} = res;
+      delete res.commissionAppeal;
+      delete res.firstAppeal;
+      delete res.id;
+      delete res.applicationNumber;
+     if(firstAppeal){
+        delete firstAppeal.id
+        delete firstAppeal.appealApplicationNumber
+      }
+      if(commissionAppeal){
+        delete commissionAppeal.id
+        delete commissionAppeal.commissionApplicationNumber
+     }
       if(this.mode === 'firstappealapplication'){
-        this.child.applicationForm.controls.forms.controls[0].setValue({address: "tvt",
-        addressTransmitted: "",
-        // applicationNumber: 1709210001,
-        applicationRelated: "",
-        //commissionAppeal: null,
-        dateCreated: "2021-10-31",
-        dateReceive: null,
-        endorsement: "",
-        endorsementDate: "2021-10-31",
-        //firstAppeal: null,
-        //id: 1,
-        isSvu: false,
-        lastDate: "2021-10-31",
-        mobilenumber: "9677290100",
-        name: "abc",
-        ofName: ""})
+        res.endorsement = res.endorsement.split(",");
+        this.child.applicationForm.controls.forms.controls[0].setValue(res);
         this.child.applicationForm.controls.forms.controls[0].disable();
       }
       if(this.mode === 'commissionappealapplication'){
+        res.endorsement = res.endorsement.split(",");
+        firstAppeal.appealEndorsement = firstAppeal.appealEndorsement.split(",");
         this.child.applicationForm.controls.forms.controls[0].setValue(res)
-        this.child.applicationForm.controls.forms.controls[1].setValue(res.firstAppeal)
+        this.child.applicationForm.controls.forms.controls[1].setValue(firstAppeal)
         this.child.applicationForm.controls.forms.controls[0].disable();
         this.child.applicationForm.controls.forms.controls[1].disable();
       }
+      if(this.mode === "bulkEdit"){
+        debugger;
+        res.endorsement = res.endorsement.split(",");
+        firstAppeal.appealEndorsement = firstAppeal.appealEndorsement.split(",");
+        this.child.applicationForm.controls.forms.controls[0].setValue(res)
+        this.child.applicationForm.controls.forms.controls[1].setValue(firstAppeal)
+        this.child.applicationForm.controls.forms.controls[2].setValue(commissionAppeal)
+        console.log(this.child.applicationForm.controls.forms);
+        debugger;
+      }
+      if(this.mode === "freshApplication"){
+        debugger;
+        this.child.applicationForm.controls.forms.controls[0].setValue(res)
+        this.child.applicationForm.controls.forms.controls[2].setValue(commissionAppeal)
+        console.log(this.child.applicationForm.controls.forms);
+        debugger;
+      }
     })
     
-    console.log(this.child.applicationForm)
+    console.log(this.child.applicationForm);
+    //this.child.applicationForm.controls.forms.controls[0].controls.endorsement.setValue(['1']);
    
   }
 

@@ -71,6 +71,10 @@ export class EditApplicationComponent implements AfterViewInit {
     debugger
     this.router.navigateByUrl('/create-application', { state:{data:{ mode,id:element.id } }});
   }
+  bulkEdit(id:any){
+    console.log(id);
+   // this.router.navigateByUrl('/create-application', { state:{data:{ mode,id:element.id } }});
+  }
 }
 
 export interface appRecords {

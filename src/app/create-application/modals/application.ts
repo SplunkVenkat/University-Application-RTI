@@ -5,10 +5,10 @@ class Application{
     public address : string = '';
     public mobilenumber : string = '';
     public dateReceive : string = '';
-    public isSvu : boolean = false;
+    public isSvu : string = '';
     public lastDate : string = '';
-    public endrosementDate : string = '';
-    public endrosement : string = '';
+    public endorsementDate : string = '';
+    public endorsement : string = '';
     public applicationRelated : string = '';
     public addressTransmitted : string = '';
     public applicationNumber : number = 0;
@@ -20,8 +20,8 @@ class FirstAppeal {
     public appealDate : string = '';
     public appealDateReceive : string = '';
     public appealApplicationNumber : string = '';
-    public appealReason : number = 0;
-    public appealEndrosement : number = 0;
+    public appealReason : string = '';
+    public appealEndorsement : string = '';
 }
 
 class CommissionAppeal {
