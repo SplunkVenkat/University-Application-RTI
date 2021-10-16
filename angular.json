@@ -7,11 +7,9 @@
       "projectType": "application",
       "schematics": {
         "@schematics/angular:application": {
-          "strict": "true"
+          "strict": true
+        }
         },
-        "@schematics/angular:component": {
-          "style": "scss"
-      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
@@ -40,7 +38,7 @@
           },
           "configurations": {
             "production": {
-              " s": [
+              "budgets": [
                 {
                   "type": "initial",
                   "maximumWarning": "2mb",
@@ -111,5 +109,4 @@
     }
   },
   "defaultProject": "college"
- }
 }
