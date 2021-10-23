@@ -23,7 +23,7 @@ export class ApplicationFormComponent implements OnInit {
     // data1.forEach(a => {
     //   this.applicationForm.get(a).disable();
     // })
-    // this.applicationForm.get('applicationLastDate').disable();
+    this.applicationForm.controls.forms.controls[0].get('lastDate').disable();
   }
 
   createForm():FormGroup{
@@ -54,10 +54,52 @@ export class ApplicationFormComponent implements OnInit {
    // this.applicationForm.get('endorsementSection').disable();
     console.log(this.applicationForm.value)
   }
-  onValueChange(type: string, formname: string, value?: string) {
+  onValueChange(type:number, formname :string, value?: any){
+  console.log(type,formname)
+   let data1 = ['applicationRelated', 'addressTransmitted'];
+  let data2 = ['endorsementDate', 'endorsement', 'lastDate'];
+  if(formname === 'isSvu' && value === 1){
+    data1.forEach(a=>{
+      this.applicationForm.controls.forms.controls[type].get(a).reset();
+      this.applicationForm.controls.forms.controls[type].get(a).disable();
+    })
+    data2.forEach(a => {
+          if(a=='endorsementDate'){
+            this.applicationForm.controls.forms.controls[type].get(a).enable();
+            this.applicationForm.controls.forms.controls[type].get(a).setValue(getDate());
+          }else if( a=='lastDate'){
+            if(this.applicationForm.controls.forms.controls[type].get('dateCreated').value){
+            const d = new Date(this.applicationForm.controls.forms.controls[type].get('dateCreated').value);
+          d.setDate(d.getDate() + 30);
+         this.applicationForm.controls.forms.controls[type].get('lastDate').setValue(moment(new Date(d)).format('YYYY-MM-DD'));
+            }
+          } else{
+            this.applicationForm.controls.forms.controls[type].get(a).enable();
+          }
+  })
+  }
+  if(formname === 'isSvu' && value === 2){
+         data2.forEach(a => {
+          this.applicationForm.controls.forms.controls[type].get(a).reset();
+          this.applicationForm.controls.forms.controls[type].get(a).disable();
+      })
+      data1.forEach(a => {
+        if(a!=='lastDate'){
+          this.applicationForm.controls.forms.controls[type].get(a).enable();
+        }
+      })
+  }
+  debugger;
+    if(formname == 'dateCreated'){
+      const d = new Date(this.applicationForm.controls.forms.controls[type].get('dateCreated').value);
+      d.setDate(d.getDate() + 30);
+      this.applicationForm.controls.forms.controls[type].get('lastDate').setValue(moment(new Date(d)).format('YYYY-MM-DD'));
+    }
+}
+  save(type: string, formname: string, value?: string) {
     debugger;
-    // let data1 = ['applicationRelated', 'addressTransmit'];
-    // let data2 = ['endorsementDate', 'endorsementSection', 'applicationLastDate'];
+    // let data1 = ['applicationRelated', 'addressTransmitted'];
+    // let data2 = ['endorsementDate', 'endorsement', 'lastDate'];
     // if(formname == 'applicationDate'){
     //   const d = new Date(this.applicationForm.get('applicationDate').value);
     //   d.setDate(d.getDate() + 30);
@@ -97,6 +139,16 @@ export class ApplicationFormComponent implements OnInit {
     console.log("child")
     this.applicationForm.reset();
     this.ngOnInit()
+  }
+
+  public updateApplicationNumber(slot:number , appId:string){
+    let header = ['Fresh Application','First Appeal','Commission Appeal'];
+    if(this.applicationFields[slot]){
+      this.applicationFields[slot].title = appId ? header[slot] +" - "+appId :   header[slot];
+    }else{
+      this.applicationFields[slot].title = header[slot]
+    }
+    
   }
 
 }

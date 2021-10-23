@@ -1,7 +1,7 @@
 <form [formGroup]="applicationForm">
   <ng-container formArrayName="forms">
     <ng-container *ngFor="let fields of applicationFields;let i=index" >
-      <h2>{{fields.title}}</h2>
+      <div class="row"><div class="col-sm-6"><h2>{{fields.title}}</h2></div><div class="col-sm-6"><button type="button" class="btn btn-danger btn-sm" style="float: right;">Revoke</button></div></div>
       <hr>
     <ng-container  *ngFor="let field of fields.formFields;" [formGroupName]="i" [ngSwitch]="field.type">
     <div class="row mb-3" *ngSwitchCase="'text'">
@@ -13,7 +13,7 @@
     <div class="row mb-3" *ngSwitchCase="'date'">
       <label for="inputPassword3" class="col-sm-2 col-form-label">{{field.label}}</label>
       <div class="col-sm-10">
-        <input type="date" class="form-control"  formControlName={{field.formControlName}}  >
+        <input type="date" class="form-control" (change)="onValueChange(i,field.formControlName)"  formControlName={{field.formControlName}}  >
       </div>
     </div>
     <div class="row mb-3" *ngSwitchCase="'dropdown'">
@@ -23,7 +23,7 @@
         </div> -->
         <label for="inputState" class="col-sm-2 col-form-label">{{field.label}}</label>
         <div class="col-sm-10">
-        <select id="inputState" class="form-select" multiple="multiple" formControlName={{field.formControlName}}>
+        <select id="inputState" class="form-select" (change)="onValueChange(i,field.formControlName)"  multiple="multiple" formControlName={{field.formControlName}}>
           <option *ngFor="let i of field.options"  value={{i.id}}> {{i.value}}</option>
         </select>
         </div>
@@ -31,10 +31,10 @@
     <fieldset class="row mb-3" *ngSwitchCase="'radio'">
       <legend class="col-form-label col-sm-2 pt-0">{{field.label}}</legend>
       <div class="col-sm-10">
-        <div class="form-check" *ngFor="let i of field.options">
-          <input class="form-check-input" type="radio" id={{i.id}}  value={{i.id}} formControlName={{field.formControlName}}>
-          <label class="form-check-label" for={{i.id}}>
-            {{i.value}}
+        <div class="form-check" *ngFor="let f of field.options">
+          <input class="form-check-input" type="radio" id={{f.id}} (change)="onValueChange(i,field.formControlName,f.id)"  value={{f.id}} formControlName={{field.formControlName}}>
+          <label class="form-check-label" for={{f.id}}>
+            {{f.value}}
           </label>
         </div>
       </div>
@@ -42,5 +42,5 @@
 </ng-container>
 </ng-container>
 </ng-container>
-<button type="button"  class="btn btn-primary" (click)="onValueChange('save','formgroup',applicationForm.value)">Save</button>
+<button type="button"  class="btn btn-primary" [disabled]="!applicationForm.valid" (click)="save('save','formgroup',applicationForm.value)">Save</button>
   </form>

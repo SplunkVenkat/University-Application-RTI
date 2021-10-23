@@ -36,8 +36,10 @@ export class CreateApplicationComponent implements OnInit , AfterViewInit {
   const { mode, id } = history.state.data
   this.mode = mode;
   this.applicationId =id;
+  debugger;
   if(mode === 'freshapplication'){
     this.data = [BASE_APPLICATION]
+    this.data[0].title = "Fresh Application";
   
   }
   if(mode === 'firstappealapplication'){
@@ -70,14 +72,20 @@ export class CreateApplicationComponent implements OnInit , AfterViewInit {
   formChange(event:any){ 
     if(this.mode === 'freshapplication') {
     let payload = event.value.forms[0];
-    let applicationNumber = this.processApplicationNumber(event.value.forms[0].dateCreated)
+    let applicationNumber = this.processApplicationNumber(event.value.forms[0].dateCreated);
+    debugger;
+    if (this.child.applicationForm.controls.forms.controls[0].get('isSvu').value == "1"){
+      let lastDate = this.child.applicationForm.controls.forms.controls[0].get('lastDate').value;
+      payload={...payload,...{lastDate}}
+      payload.endorsement = payload.endorsement.toString()
+    }
     payload = {...payload,...{applicationNumber}};
     debugger;
-    payload.endorsement = payload.endorsement.toString()
+    
     this.applicationService.createFreshApplication(payload).subscribe((res:any)=>{
       console.log(res);
       this.isLoading = false;
-      this.openDialog(res)
+      this.openDialog(res.applicationNumber)
     
     })
     }
@@ -88,7 +96,7 @@ export class CreateApplicationComponent implements OnInit , AfterViewInit {
       this.applicationService.updateFreshApplication({firstAppeal:payload},this.applicationId).subscribe((res:any)=>{
         console.log(res);
         this.isLoading = false;
-       // this.openDialog(res)
+       this.openDialog(res.firstAppeal.appealApplicationNumber)
       
       })
     }
@@ -98,11 +106,32 @@ export class CreateApplicationComponent implements OnInit , AfterViewInit {
       this.applicationService.updateFreshApplication({commissionAppeal:payload},this.applicationId).subscribe((res:any)=>{
         console.log(res);
         this.isLoading = false;
-       // this.openDialog(res)
+       this.openDialog(res.commissionAppeal.commissionApplicationNumber)
       
       })
     }
     if(this.mode == 'bulkEdit'){
+      let application = event.value.forms[0];
+      debugger;
+      if (this.child.applicationForm.controls.forms.controls[0].get('isSvu').value == "1"){
+        let lastDate = this.child.applicationForm.controls.forms.controls[0].get('lastDate').value;
+        application={...application,...{lastDate}}
+        application.endorsement = application.endorsement.toString()
+      }
+      //----------------------------->
+      
+      let firstAppeal = event.value.forms[1];
+      firstAppeal.appealEndorsement = firstAppeal.appealEndorsement.toString();
+      let commissionAppeal = event.value.forms[2];
+      debugger;
+      let payload = {...application,...{firstAppeal},...{commissionAppeal}}
+      console.log(payload)
+      this.applicationService.updateFreshApplication(payload,this.applicationId).subscribe((res:any)=>{
+        console.log(res);
+        this.isLoading = false;
+       this.openDialog(res.commissionAppeal.applicationNumber)
+      
+      })
 
     }
   }
@@ -112,10 +141,14 @@ export class CreateApplicationComponent implements OnInit , AfterViewInit {
     this.applicationService.getApplicationById(this.applicationId).subscribe((res:any)=>{
       debugger;
       const {commissionAppeal , firstAppeal} = res;
+      this.child.updateApplicationNumber(0,res.applicationNumber);
+      this.child.updateApplicationNumber(1,firstAppeal ? firstAppeal.appealApplicationNumber : null);
+      this.child.updateApplicationNumber(2,commissionAppeal ? commissionAppeal.commissionApplicationNumber : null);
       delete res.commissionAppeal;
       delete res.firstAppeal;
       delete res.id;
       delete res.applicationNumber;
+    
      if(firstAppeal){
         delete firstAppeal.id
         delete firstAppeal.appealApplicationNumber
@@ -146,13 +179,18 @@ export class CreateApplicationComponent implements OnInit , AfterViewInit {
         this.child.applicationForm.controls.forms.controls[2].setValue(commissionAppeal)
         console.log(this.child.applicationForm.controls.forms);
         debugger;
+        if(this.child.applicationForm.controls.forms.controls[0].get('isSvu').value == "1"){
+          this.child.applicationForm.controls.forms.controls[0].get('applicationRelated').disable();
+          this.child.applicationForm.controls.forms.controls[0].get('addressTransmitted').disable();
+        }
       }
       if(this.mode === "freshApplication"){
-        debugger;
-        this.child.applicationForm.controls.forms.controls[0].setValue(res)
-        this.child.applicationForm.controls.forms.controls[2].setValue(commissionAppeal)
-        console.log(this.child.applicationForm.controls.forms);
-        debugger;
+        // debugger;
+        // this.child.applicationForm.controls.forms.controls[0].setValue(res)
+        // this.child.applicationForm.controls.forms.controls[2].setValue(commissionAppeal)
+        // this.child.updateApplicationNumber(0,null);
+        // console.log(this.child.applicationForm.controls.forms);
+        // debugger;
       }
     })
     
@@ -256,16 +294,16 @@ export class CreateApplicationComponent implements OnInit , AfterViewInit {
       }, 1000);
     }
 
-    openDialog(data1:any): void {
+    openDialog(applicationNumber:any): void {
       const dialogRef = this.dialog.open(MyModalComponent, {
         width: '250px',
-        data: {id:data1.application_number}
+        data: {id:applicationNumber}
       });
   
       dialogRef.afterClosed().subscribe(result => {
         console.log('The dialog was closed');
         if(result.event === 'print'){
-          this.printApplication(data1)
+          this.printApplication(applicationNumber)
         }else{
           this.router.navigate(['edit-application']);
         }

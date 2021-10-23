@@ -144,13 +144,13 @@ formFields:[
           "value": "Both"
         }
       ],
-      "required": true
+      "required": false
     },
     {
       "type": "dropdown",
       "formControlName": "appealEndorsement",
       "label": "FA Endorsement given sections",
-      "value": "1",
+      "value": "",
       "options": [
         {
           "id": 1,
