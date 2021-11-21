@@ -1,7 +1,7 @@
 <form [formGroup]="applicationForm">
   <ng-container formArrayName="forms">
     <ng-container *ngFor="let fields of applicationFields;let i=index" >
-      <div class="row"><div class="col-sm-6"><h2>{{fields.title}}</h2></div><div class="col-sm-6"><button type="button" class="btn btn-danger btn-sm" style="float: right;">Revoke</button></div></div>
+      <div class="row"><div class="col-sm-6"><h2>{{fields.title}}</h2></div><div class="col-sm-6"><button *ngIf="fields.showRevokeButton" type="button" (click)="revokeApplication(i)" class="btn btn-danger btn-sm" style="float: right;">Revoke</button><button  type="button" (click)="printPDF(i)" class="btn btn-primary btn-sm" style="float: right;">Print</button></div></div>
       <hr>
     <ng-container  *ngFor="let field of fields.formFields;" [formGroupName]="i" [ngSwitch]="field.type">
     <div class="row mb-3" *ngSwitchCase="'text'">

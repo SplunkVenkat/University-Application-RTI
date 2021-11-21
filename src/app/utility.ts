@@ -15,3 +15,8 @@ export function getDate(): string {
     today = yyyy + '-' + mm + '-' + dd;
     return today;
 }
+export function addDaysToDate(date:string,days:number):Date{
+    const d = new Date(date);
+    d.setDate(d.getDate() + days);
+    return d;
+}

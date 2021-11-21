@@ -8,5 +8,7 @@ export interface IFields {
 }
 export interface IForm {
     title:string;
+    showRevokeButton:boolean;
+    showPrintButton:boolean;
     formFields :Array<IFields>
 }

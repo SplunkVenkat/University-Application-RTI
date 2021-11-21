@@ -38,4 +38,7 @@ export class ApplicationService {
   public getApplicationById(id:string){
     return this.http.get(this.REST_API_SERVER + 'application/'+id)
   }
+  public deleteApplicationById(queryParams:string){
+    return this.http.delete(this.REST_API_SERVER +  'application/'+queryParams)
+  }
 }

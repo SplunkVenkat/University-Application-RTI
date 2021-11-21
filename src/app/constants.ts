@@ -1,5 +1,7 @@
 export const BASE_APPLICATION = {
 title:"Fresh Application",
+showRevokeButton : false,
+showPrintButton: true,
 formFields:[
     {
       "type": "text",
@@ -110,6 +112,8 @@ formFields:[
 
   export const FA_SECTION = {
     title:"First Appeal",
+    showRevokeButton : true,
+    showPrintButton: true,
     formFields:[
     {
       "type": "date",
@@ -168,6 +172,8 @@ formFields:[
 
   export const CA_SECTION = {
     title:"Commission Appeal",
+    showRevokeButton : true,
+    showPrintButton: true,
     formFields:[
     {
       "type": "text",
