@@ -12,7 +12,7 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 })
 export class EditApplicationComponent implements AfterViewInit {
   records : appRecords[] | any = [];
-  displayedColumns: string[] = ['applicationId', 'name', 'mobilenumber', 'dateCreated','firstAppeal','commissionAppeal'];
+  displayedColumns: string[] = ['actions','applicationId', 'name', 'mobilenumber', 'dateCreated','firstAppeal','commissionAppeal'];
   dataSource = new MatTableDataSource<appRecords>(this.records);
   @ViewChild('input') input: ElementRef|any;
   value :string='';
@@ -42,10 +42,11 @@ export class EditApplicationComponent implements AfterViewInit {
    this.applicationService.getApplicationRecords(query).subscribe((records:any)=>{
      let data:any =[];
      records.results.forEach((element:any) => {
-       data.push({id :element.id ,name:element.name,applicationId:element.applicationNumber,dateCreated:new Date(element.dateCreated).toISOString(),mobilenumber:element.mobilenumber,firstAppeal:element.firstAppeal ? true : false,commissionAppeal:element.commissionAppeal ? true :false})
+       data.push({id :element.id ,name:element.name,applicationId:element.applicationNumber,dateCreated:element.dateCreated,mobilenumber:element.mobilenumber,firstAppeal:element.firstAppeal ? true : false,commissionAppeal:element.commissionAppeal ? true :false,actions:true})
      });
      this.paginator.length=records.count;
      console.log(this.paginator)
+     console.log(data)
      this.dataSource = data;
      this.isLoading = false;
    })

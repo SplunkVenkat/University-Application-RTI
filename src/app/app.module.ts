@@ -19,6 +19,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatIconModule} from '@angular/material/icon';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatChipsModule} from '@angular/material/chips';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     MatInputModule,
     MatFormFieldModule,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatChipsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
